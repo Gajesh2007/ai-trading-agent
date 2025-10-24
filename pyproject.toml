@@ -1,9 +1,9 @@
 [project]
-name = "trading-agent"
+name = "trading_agent"
 version = "0.1.0"
-description = ""
+description = "AI trading agent"
 authors = [
-    {name = "Gajesh Naik",email = "26431906+Gajesh2007@users.noreply.github.com"}
+    { name = "Gajesh Naik", email = "26431906+Gajesh2007@users.noreply.github.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.12,<4"
@@ -17,7 +17,9 @@ dependencies = [
     "rich (>=14.2.0,<15.0.0)"
 ]
 
-
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "src" }]

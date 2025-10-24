@@ -51,7 +51,9 @@ Populate `.env` (use `.env.example` as reference):
 - **LLM_MODEL**: No key needed; specify a model name like "x-ai/grok-4" (see OpenRouter models list).
 
 ## Usage
-Run: `poetry run python src/main.py --assets BTC ETH --interval 1h`
+1. `pip install -e .`
+
+2. `poetry run python src/main.py --assets BTC ETH --interval 1h`
 
 ### Local API Endpoints
 When the agent runs, it also serves a minimal API:
