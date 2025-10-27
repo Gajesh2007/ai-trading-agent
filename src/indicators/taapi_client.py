@@ -23,6 +23,10 @@ class TAAPIClient:
                 resp.raise_for_status()
                 return resp.json()
             except requests.HTTPError as e:
+                if e.response.status_code == 429:  # Rate Limit
+                    logging.warning("TAAPI Rate Limit (429), waiting 15s")
+                    time.sleep(15)
+                    continue
                 if e.response.status_code >= 500 and attempt < retries - 1:
                     wait = backoff * (2 ** attempt)
                     logging.warning(f"TAAPI {e.response.status_code}, retrying in {wait}s")
@@ -47,10 +51,15 @@ class TAAPIClient:
             "interval": interval
         }
         rsi_response = self._get_with_retry(f"{self.base_url}rsi", params)
+        time.sleep(4)  
         macd_response = self._get_with_retry(f"{self.base_url}macd", params)
+        time.sleep(4) 
         sma_response = self._get_with_retry(f"{self.base_url}sma", params)
+        time.sleep(4) 
         ema_response = self._get_with_retry(f"{self.base_url}ema", params)
-        bbands_response = self._get_with_retry(f"{self.base_url}bbands", params)
+        time.sleep(4) 
+        bbands_response = self._get_with_retry(f"{self.base_url}bbands2", params)  # اصلاح به bbands2
+        time.sleep(4)  
         return {
             "rsi": rsi_response.get("value"),
             "macd": macd_response,
@@ -71,6 +80,7 @@ class TAAPIClient:
         if params:
             base_params.update(params)
         response = self._get_with_retry(f"{self.base_url}{indicator}", base_params)
+        time.sleep(4)
         return response
 
     def fetch_series(self, indicator: str, symbol: str, interval: str, results: int = 10, params: dict | None = None, value_key: str = "value") -> list:
@@ -95,12 +105,10 @@ class TAAPIClient:
                     return [round(v, 4) if isinstance(v, (int, float)) else v for v in data[value_key]]
                 # Error response
                 if "error" in data:
-                    import logging
                     logging.error(f"TAAPI error for {indicator} {symbol} {interval}: {data.get('error')}")
                     return []
             return []
         except Exception as e:
-            import logging
             logging.error(f"TAAPI fetch_series exception for {indicator}: {e}")
             return []
 
@@ -116,6 +124,7 @@ class TAAPIClient:
             if params:
                 base_params.update(params)
             data = self._get_with_retry(f"{self.base_url}{indicator}", base_params)
+            time.sleep(4) 
             if isinstance(data, dict):
                 val = data.get(key)
                 return round(val, 4) if isinstance(val, (int, float)) else val
